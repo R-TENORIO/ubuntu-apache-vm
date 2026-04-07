@@ -1,0 +1,44 @@
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ambientes virtuais Python
+venv/
+env/
+.env
+
+# Arquivos de compilação
+*.o
+*.so
+*.a
+
+# Pacotes
+node_modules/
+vendor/
+
+# Arquivos de backup
+*.bak
+*~
+
+# Arquivos de evidências (prints locais)
+docs/evidencias/*.png
+docs/evidencias/*.jpg
+docs/evidencias/*.jpeg
+docs/evidencias/*.bmp
+docs/evidencias/*.gif
