@@ -3,100 +3,728 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Servidor Web Apache - Projeto Acadêmico U4-A1">
-    <title>Ubuntu Apache VM - Servidor Web</title>
+    <meta name="description" content="Projeto acadêmico - VM Ubuntu + Apache | Rodrigo Tenorio">
+    <meta property="og:title" content="Projeto Ubuntu + Apache | Rodrigo Tenorio">
+    <meta property="og:description" content="Virtualização de Servidor Web com VirtualBox - Anhanguera Educacional">
+    <title>U4-A1 | Rodrigo Tenório – Servidor Apache</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #06b6d4;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e76f51 0%, #264653 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
         }
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+        }
+        
+        .header-info {
+            text-align: right;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Navigation */
+        nav {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        
+        .nav-links::-webkit-scrollbar { display: none; }
+        
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 3rem 0;
             text-align: center;
         }
-        h1 {
-            color: #264653;
+        
+        .hero h1 {
             font-size: 2.5rem;
-            margin-bottom: 10px;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .subtitle {
-            color: #e76f51;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
+        
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
         }
-        .badge {
-            display: inline-block;
-            background: #2a9d8f;
+        
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .status-item {
+            background: var(--surface);
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Cards Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .card {
+            background: var(--surface);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--primary);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: #f1f5f9; }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-badge.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-badge.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        /* Terminal */
+        .terminal {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            font-family: 'Fira Code', 'Consolas', monospace;
             font-size: 0.9rem;
-            margin: 5px;
+            overflow-x: auto;
+            margin: 1rem 0;
         }
-        .info {
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 2px solid #e9ecef;
+        
+        .terminal-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #334155;
         }
-        .info p {
-            color: #495057;
-            line-height: 1.8;
-            margin: 10px 0;
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
         }
-        .author {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #dee2e6;
+        
+        .terminal-dot.red { background: #ef4444; }
+        .terminal-dot.yellow { background: #f59e0b; }
+        .terminal-dot.green { background: #22c55e; }
+        
+        .command { color: #60a5fa; }
+        .output { color: #94a3b8; margin-left: 2rem; }
+        .success-msg { color: #4ade80; }
+        
+        /* Steps Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 1.5rem 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.85rem;
+            top: 0.25rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--surface);
+            box-shadow: var(--shadow);
+        }
+        
+        .timeline-item h4 {
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .timeline-item p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        /* Author Section */
+        .author-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .author-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .author-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 0.5rem;
             font-size: 0.9rem;
-            color: #6c757d;
+            transition: all 0.2s;
         }
-        .status {
-            background: #e7f5ff;
-            border: 1px solid #74c0fc;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            color: #1864ab;
+        
+        .author-links a:hover {
+            background: rgba(255,255,255,0.2);
         }
+        
+        /* Footer */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; text-align: center; }
+            .header-info { text-align: center; }
+            .hero h1 { font-size: 2rem; }
+            .nav-links { justify-content: center; }
+            .grid { grid-template-columns: 1fr; }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card, .timeline-item {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Ubuntu Apache VM</h1>
-        <p class="subtitle">Servidor Web Ativo</p>
-        
-        <div class="badge">Ubuntu 24.04 LTS</div>
-        <div class="badge">Apache 2.4</div>
-        <div class="badge">Porta 80</div>
-        
-        <div class="status">
-            O servidor Apache está funcionando corretamente!
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <span>🐧</span>
+                <span>U4-A1 | Rodrigo Tenório</span>
+                <span class="logo-badge">Servidor Apache</span>
+            </div>
+            <div class="header-info">
+                <div>Redes e Sistemas Distribuídos</div>
+                <div>U4-A1 Virtualização • Anhanguera Educacional</div>
+            </div>
         </div>
-        
-        <div class="info">
-            <p><strong>Projeto Acadêmico U4-A1</strong></p>
-            <p>Virtualização de Servidor Web com Ubuntu e Apache</p>
-            <p>Curso de Engenharia de Software</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="nav-links">
+                <a href="#inicio" class="active">🏠 Início</a>
+                <a href="#objetivo">🎯 Objetivo</a>
+                <a href="#especificacoes">⚙️ Especificações</a>
+                <a href="#comandos">💻 Comandos</a>
+                <a href="#etapas">📋 Etapas</a>
+                <a href="#tecnologias">🛠️ Tecnologias</a>
+                <a href="#autor">👤 Autor</a>
+            </div>
         </div>
-        
-        <div class="author">
-            Autor: Rodrigo Tenorio | @R-TENORIO
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="container">
+            <h1>🖥️ Servidor Web Ubuntu_VM</h1>
+            <p>Projeto acadêmico demonstrando virtualização com VirtualBox, instalação do Ubuntu 24.04 LTS e configuração do servidor web Apache2.</p>
+            
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-dot"></span>
+                    <span>Apache2: active (running)</span>
+                </div>
+                <div class="status-item">
+                    <span>🌐</span>
+                    <span>IP: 10.0.2.15</span>
+                </div>
+                <div class="status-item">
+                    <span>🔌</span>
+                    <span>Porta: 80 (HTTP)</span>
+                </div>
+                <div class="status-item">
+                    <span>🐧</span>
+                    <span>Ubuntu 24.04 LTS</span>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        
+        <!-- Objetivo -->
+        <section id="objetivo" class="card">
+            <h3>🎯 Objetivo do Projeto</h3>
+            <p>Entender e aplicar na prática os conceitos de <strong>virtualização</strong>, <strong>sistemas operacionais Linux</strong> e <strong>configuração de servidores web</strong>, consolidando competências para infraestrutura de TI e Cloud Computing.</p>
+        </section>
+
+        <!-- Especificações da VM -->
+        <section id="especificacoes">
+            <h2 style="margin: 2rem 0 1rem;">⚙️ Especificações da Máquina Virtual</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Componente</th>
+                            <th>Configuração</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Nome da VM</strong></td>
+                            <td>Ubuntu_VM</td>
+                            <td><span class="status-badge success">✓ Criada</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sistema Operacional</strong></td>
+                            <td>Ubuntu 24.04.3 LTS (64-bit)</td>
+                            <td><span class="status-badge success">✓ Instalado</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Memória RAM</strong></td>
+                            <td>3710 MB</td>
+                            <td><span class="status-badge info">Configurada</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Processadores (vCPU)</strong></td>
+                            <td>2 CPUs</td>
+                            <td><span class="status-badge info">Configurada</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Disco Rígido Virtual</strong></td>
+                            <td>25 GB – VDI – Alocação Dinâmica</td>
+                            <td><span class="status-badge info">Configurado</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Adaptador de Rede</strong></td>
+                            <td>NAT – Intel PRO/1000 MT Desktop</td>
+                            <td><span class="status-badge success">NAT Ativo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Servidor Web</strong></td>
+                            <td>Apache2 HTTP Server</td>
+                            <td><span class="status-badge success">✓ Running</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Endereço IP</strong></td>
+                            <td>10.0.2.15 (rede interna NAT)</td>
+                            <td><span class="status-badge info">Acessível</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hipervisor</strong></td>
+                            <td>Oracle VirtualBox 7.x</td>
+                            <td><span class="status-badge success">✓ Ativo</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Comandos Executados -->
+        <section id="comandos">
+            <h2 style="margin: 2rem 0 1rem;">💻 Comandos Executados</h2>
+            
+            <div class="terminal">
+                <div class="terminal-header">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span style="margin-left: 0.5rem; font-size: 0.85rem;">Terminal — rodrigo-tenorio@ubuntu-vm</span>
+                </div>
+                <div>
+                    <span class="command">rodrigo-tenorio@ubuntu-vm:~$</span> sudo apt update && sudo apt upgrade -y<br>
+                    <span class="output">Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease</span><br>
+                    <span class="output">160 packages can be upgraded.</span><br>
+                    <span class="success-msg">✓ Sistema atualizado com sucesso.</span><br><br>
+                    
+                    <span class="command">rodrigo-tenorio@ubuntu-vm:~$</span> sudo apt install apache2 -y<br>
+                    <span class="output">The following NEW packages will be installed:</span><br>
+                    <span class="output">apache2 apache2-bin apache2-data ...</span><br>
+                    <span class="output">0 upgraded, 8 newly installed, 0 to remove.</span><br>
+                    <span class="success-msg">✓ Apache2 instalado com sucesso.</span><br><br>
+                    
+                    <span class="command">rodrigo-tenorio@ubuntu-vm:~$</span> systemctl status apache2<br>
+                    <span class="output">● apache2.service - The Apache HTTP Server</span><br>
+                    <span class="output">     Loaded: loaded (/usr/lib/systemd/system/apache2.service; enabled)</span><br>
+                    <span class="success-msg">     Active: active (running) since Tue 2026-04-07 15:58:46</span><br>
+                    <span class="output">     Main PID: 17466 (apache2) | Memory: 5.2M</span><br><br>
+                    
+                    <span class="command">rodrigo-tenorio@ubuntu-vm:~$</span> ip a<br>
+                    <span class="success-msg">     inet 10.0.2.15/24 brd 10.0.2.255 scope global dynamic enp0s3</span><br><br>
+                    
+                    <span class="command">rodrigo-tenorio@ubuntu-vm:~$</span> ping www.google.com -c 4<br>
+                    <span class="output">PING www.google.com (142.250.x.x): 56 bytes of data</span><br>
+                    <span class="output">64 bytes from 142.250.x.x: icmp_seq=0 ttl=117 time=14.2 ms</span><br>
+                    <span class="success-msg">4 packets transmitted, 4 received, 0% packet loss</span><br><br>
+                    
+                    <span class="command">rodrigo-tenorio@ubuntu-vm:~$</span> sudo nano /var/www/html/index.html<br>
+                    <span class="success-msg"># Arquivo index.html personalizado criado com sucesso.</span><br>
+                    <span class="success-msg">✓ Esta página está sendo servida pelo Apache2!</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Etapas Realizadas -->
+        <section id="etapas">
+            <h2 style="margin: 2rem 0 1rem;">📋 Etapas Realizadas</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4><span class="step-number">1</span> Instalação do VirtualBox</h4>
+                    <p>Hipervisor Oracle VirtualBox instalado no host Windows. Interface gráfica configurada no modo Expert para acesso a todas as opções.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4><span class="step-number">2</span> Download da ISO do Ubuntu</h4>
+                    <p>Imagem <code>ubuntu-24.04.3-desktop-amd64.iso</code> baixada do site oficial ubuntu.com e salva localmente para uso como mídia de instalação.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4><span class="step-number">3</span> Criação e configuração da VM</h4>
+                    <p>VM criada com nome <code>Ubuntu_VM</code>, 3710 MB RAM, 2 vCPUs, disco VDI de 25 GB e adaptador de rede em modo <code>NAT</code>.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4><span class="step-number">4</span> Instalação do Ubuntu 24.04 LTS</h4>
+                    <p>Sistema operacional instalado a partir da ISO montada. Usuário <code>rodrigo-tenorio</code> criado. ISO removida após instalação.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4><span class="step-number">5</span> Atualização do sistema</h4>
+                    <p>Executado <code>sudo apt update && sudo apt upgrade -y</code>. Sistema atualizado com todos os pacotes mais recentes.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4><span class="step-number">6</span> Instalação e configuração do Apache2</h4>
+                    <p>Servidor web instalado via <code>sudo apt install apache2 -y</code>. Status confirmado como <code>active (running)</code> via systemctl.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4><span class="step-number">7</span> Testes de conectividade e acesso</h4>
+                    <p>Ping ao Google com 0% de perda. IP <code>10.0.2.15</code> identificado. Página padrão do Apache acessada pelo host via HTTP.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4><span class="step-number">8</span> Personalização do index.html</h4>
+                    <p>Arquivo <code>/var/www/html/index.html</code> editado com <code>nano</code>. Esta página é o resultado dessa personalização!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tecnologias -->
+        <section id="tecnologias">
+            <h2 style="margin: 2rem 0 1rem;">🛠️ Tecnologias Utilizadas</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>🖥️ Virtualização</h3>
+                    <p><strong>Oracle VirtualBox 7.x</strong><br>Hipervisor Type-2 para criação e gerenciamento de máquinas virtuais multiplataforma.</p>
+                </div>
+                <div class="card">
+                    <h3>🐧 Sistema Operacional</h3>
+                    <p><strong>Ubuntu 24.04.3 LTS</strong><br>Distribuição Linux com suporte de longo prazo (5 anos), ideal para servidores de produção.</p>
+                </div>
+                <div class="card">
+                    <h3>🌐 Servidor Web</h3>
+                    <p><strong>Apache HTTP Server 2.4</strong><br>Servidor web open-source robusto, configurado para servir conteúdo via protocolo HTTP.</p>
+                </div>
+                <div class="card">
+                    <h3>🔧 Ferramentas</h3>
+                    <p><strong>APT</strong> (gerenciador de pacotes)<br><strong>systemctl</strong> (controle de serviços)<br><strong>nano</strong> (editor de texto)<br><strong>ip/ping</strong> (diagnóstico de rede)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Autor -->
+        <section id="autor" class="author-card">
+            <div class="author-avatar">RT</div>
+            <h3>Rodrigo Tenório Cavalcante</h3>
+            <p style="opacity: 0.9; margin: 0.5rem 0;">Estudante de Análise e Desenvolvimento de Sistemas</p>
+            <p style="font-size: 0.9rem; opacity: 0.8;">
+                🎓 Anhanguera Educacional • Matrícula: 2025342677<br>
+                📅 Abril de 2026 • U4-A1 Virtualização e Conteinerização
+            </p>
+            <div class="author-links">
+                <a href="https://github.com/R-TENORIO" target="_blank" rel="noopener">
+                    ⭐ GitHub: @R-TENORIO
+                </a>
+                <a href="U4_A1_Virtualizacao_Tenorio_FINAL.docx">
+                    📄 Baixar Relatório
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>
+                Servidor Apache2 em execução na VM Ubuntu_VM • VirtualBox (NAT) • IP: 10.0.2.15<br>
+                © 2026 Rodrigo Tenório Cavalcante • Anhanguera – Redes e Sistemas Distribuídos<br>
+                <a href="https://github.com/R-TENORIO" target="_blank" rel="noopener">github.com/R-TENORIO</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Smooth Scroll Script -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Update active nav link
+                    document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Update active nav on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (pageYOffset >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
